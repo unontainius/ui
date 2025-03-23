@@ -7,10 +7,11 @@
     }
 
     let { value = $bindable(""), options = [], accentColor = "#a8c2fa" } = $props();
+
     let isOpen = $state(false);
     let selectedLabel = $derived(options.find(opt => opt.value === value)?.label ?? "Select...");
     let buttonElement: HTMLButtonElement;
-    let optionsContainer: HTMLDivElement;
+    let optionsContainer: HTMLDivElement | undefined = $state(undefined);
     let showAbove = $state(false);
     
     // For keystroke matching
@@ -160,10 +161,10 @@
         background-color: white;
         border: 1px solid #d3d2d2;
         border-radius: 0.5rem;
-        max-height: 15rem;
+        max-height: 50dvh;
         overflow-y: auto;
         padding: 0.5rem;
-        z-index: 50;
+        z-index: 9999;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
 

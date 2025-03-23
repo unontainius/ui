@@ -6,7 +6,8 @@
 <script lang="ts">
     import type { MouseEventHandler } from 'svelte/elements';
     
-    let { 
+    let {
+        customStyle = $bindable(''),
         backgroundColor = '#4b5563',
         foregroundColor = '#ffffff',
         borderRadius = 8,
@@ -52,29 +53,31 @@
     style="
         --bg-color: {backgroundColor};
         --fg-color: {foregroundColor};
-        --hover-bg: {hoverBg};
-        --hover-fg: {hoverFg};
+        --hover-bg: {foregroundColor};
+        --hover-fg: {backgroundColor};
         --border-radius: {borderRadius}px;
         --border-width: {borderWidth}px;
         --border-color: {borderColor};
         --min-width: {iconPosition === 'center' ? 'auto' : minWidth};
         --shadow: {shadows[shadowStyle]};
         --font-size: {fontSize};
+        {customStyle}
     "
     data-icon-position={iconPosition}
 >
     {#if icon && iconPosition !== 'none' && (iconPosition === 'left' || iconPosition === 'center')}
-        <i class="material-icons" style="color: inherit">{icon}</i>
+        <i class="material-icons" style="color: inherit;">{icon}</i>
     {/if}
     {#if iconPosition !== 'center'}
         <span class="caption">{caption}</span>
     {/if}
     {#if icon && iconPosition !== 'none' && iconPosition === 'right'}
-        <i class="material-icons" style="color: inherit">{icon}</i>
+        <i class="material-icons" style="color: inherit;">{icon}</i>
     {/if}
 </button>
 
 <style>
+
     button {
         background-color: var(--bg-color);
         color: var(--fg-color);

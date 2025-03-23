@@ -48,6 +48,7 @@
 		<div class="hero-content">
 			<h1>{greeting}!</h1>
 			<p class="tagline">Welcome to my Modern UI Component Library</p>
+			<Button caption="Get Started" fontSize='1.5rem' onclick={() => (window.location.href = '/examples')}/>
 		</div>
 		<div class="hero-image">
 			<span class="material-icons hero-icon">dashboard</span>

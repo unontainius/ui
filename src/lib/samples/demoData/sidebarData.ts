@@ -13,6 +13,16 @@ const demoNavItems: NavItem[] = [
         href: '/',
     },
     {
+        icon: 'handyman',
+        label: 'Style Builder',
+        href: '/examples/style-builder',
+    },
+    {
+        icon: 'handyman',
+        label: 'Style Builder Window',
+        href: '/examples/style-builder-window   ',
+    },
+    {
         icon: 'fit_screen',
         label: 'Button',
         href: '/examples/button',
@@ -30,7 +40,7 @@ const demoNavItems: NavItem[] = [
     },
     {
         icon: 'wysiwyg',
-        label: 'Modal',
+        label: 'Window',
         href: '/examples/modal',
     },
     {

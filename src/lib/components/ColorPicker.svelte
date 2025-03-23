@@ -1,7 +1,7 @@
 <script lang="ts">
     import Modal from "./Modal.svelte";
-    import { onMount } from 'svelte';
     import Select from './Select.svelte';
+    import Button from './Button.svelte';
 
     type WebColor = {
         value: string;
@@ -324,6 +324,33 @@
         }
         return color.toUpperCase();
     }
+
+    // Add clipboard functions
+    async function copyColorToClipboard() {
+        try {
+            await navigator.clipboard.writeText(color);
+            // Optional: Show a success message
+            console.log('Color copied to clipboard:', color);
+        } catch (err) {
+            console.error('Failed to copy color:', err);
+        }
+    }
+
+    async function pasteColorFromClipboard() {
+        try {
+            const text = await navigator.clipboard.readText();
+            // Validate if the text is a valid color (hex format)
+            if (/^#[0-9A-Fa-f]{6}$/.test(text)) {
+                color = text;
+                // Update the color picker state
+                initializeTempValues();
+                // Optional: Show a success message
+                console.log('Color pasted from clipboard:', text);
+            }
+        } catch (err) {
+            console.error('Failed to paste color:', err);
+        }
+    }
 </script>
 
 <div class="color-picker-button">
@@ -341,7 +368,9 @@
         <span class="label">{label}</span>
     {/if}
     {#if textSide === "right"}
-        <span class="color-code">{ensureHexLength(color)}</span>
+        <div class="color-code-container">
+            <span class="color-code">{ensureHexLength(color)}</span>
+        </div>
     {/if}
 </div>
 
@@ -474,6 +503,35 @@
                             />
                         </div>
                     </div>
+
+                    <div class="color-actions">
+                        <Button
+                            onclick={copyColorToClipboard}
+                            caption=""
+                            icon="content_copy"
+                            iconPosition="center"
+                            fontSize="1rem"
+                            borderRadius={4}
+                            backgroundColor="white"
+                            foregroundColor="#666"
+                            borderWidth={1}
+                            borderColor="#ddd"
+                            minWidth="32px"
+                        />
+                        <Button
+                            onclick={pasteColorFromClipboard}
+                            caption=""
+                            icon="content_paste"
+                            iconPosition="center"
+                            fontSize="1rem"
+                            borderRadius={4}
+                            backgroundColor="white"
+                            foregroundColor="#666"
+                            borderWidth={1}
+                            borderColor="#ddd"
+                            minWidth="32px"
+                        />
+                    </div>
                 </div>
             </Modal>
         </div>
@@ -520,13 +578,18 @@
         font-size: 1.5rem;
         color: #4b5563;
     }
+    .color-code-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
 
+    }
     .color-code {
         font-family: monospace;
         font-size: 0.875rem;
         color: #4b5563;
         background: #f3f4f6;
-        padding: 0.25rem 0.5rem;
+        padding: 8px 16px;
         border-radius: 0.25rem;
     }
 
@@ -719,5 +782,16 @@
     .color-picker-modal {
         pointer-events: auto;
         width: 300px;
+    }
+
+    .color-picker-container {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .color-actions {
+        display: flex;
+        gap: 0.25rem;
     }
 </style> 

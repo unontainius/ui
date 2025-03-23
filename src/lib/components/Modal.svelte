@@ -166,19 +166,20 @@
         `}
     >
         <div class="header">
-            <h1 
+            <button 
                 class="drag-handle"
                 onmousedown={handleMousedown}
+                type="button"
             >
                 <span class="material-icons compass-icon">north</span>
                 {header}
-            </h1>
+            </button>
             <button class="close-btn" onclick={() => onCancel?.()}>
                 <span class="material-icons">close</span>
             </button>
         </div>
         <div class="content">
-            <slot />
+            {@render children()}
         </div>
         {#if actionBtns}
             <div class="action-btns">

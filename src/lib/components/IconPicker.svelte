@@ -1,6 +1,7 @@
 <script lang="ts">
     import Modal from './Modal.svelte';
     import { materialIcons } from '$lib/data/materialIcons';
+	import Window from './Window.svelte';
 
     let { 
         isOpen = $bindable(false),
@@ -67,12 +68,9 @@
         }
     }
 </script>
-// Usage example:
-<!-- <Modal {...modalConfig}>
-    <div>Your content here</div>
-</Modal>`; -->
+
 {#if isOpen}
-    <Modal
+    <!-- <Modal
         bind:isOpen
         header="Select Icon"
         {size}
@@ -117,13 +115,60 @@
                 {/if}
             </div>
         </div>
-    </Modal>
+    </Modal> -->
+
+    <Window
+        bind:show={isOpen}
+        title="Select Icon"
+        width="lg"
+        position="center"
+        onDialogueResult={handleAccept}
+        showFooter={false}
+    >
+    <div class="picker-content">
+        <div class="search-container">
+            <i class="material-icons search-icon">search</i>
+            <input
+                type="text"
+                bind:value={searchQuery}
+                placeholder="Search icons..."
+                class="search-input"
+            />
+            {#if searchQuery}
+                <button class="clear-button" onclick={() => searchQuery = ''}>
+                    <i class="material-icons">close</i>
+                </button>
+            {/if}
+        </div>
+
+        <div class="icons-grid">
+            {#each filteredIcons as icon}
+                <button
+                    class="icon-button"
+                    class:selected={icon === tempSelectedIcon}
+                    onclick={() => {
+                        tempSelectedIcon = icon;
+                        onselect(icon);
+                        onclose?.();
+                    }}
+                >
+                    <i class="material-icons">{icon}</i>
+                    <span class="icon-name">{icon}</span>
+                </button>
+            {/each}
+            {#if filteredIcons.length === 0}
+                <div class="no-results">
+                    No icons found for "{searchQuery}"
+                </div>
+            {/if}
+        </div>
+    </div>
+    </Window>
 {/if}
 
 <style>
     :global(.picker-content) {
         width: 100%;
-        height: 100%;
         display: flex;
         flex-direction: column;
         gap: 1rem;
@@ -181,11 +226,9 @@
 
     :global(.icons-grid) {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 0.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
         padding: 1rem 0;
-        max-height: 60vh;
-        overflow-y: auto;
         width: 100%;
     }
 
@@ -193,13 +236,15 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.5rem;
-        padding: 1rem 0.5rem;
+        gap: 0.75rem;
+        padding: 1.25rem 0.75rem;
         border: 1px solid transparent;
         border-radius: 0.375rem;
         background: none;
         cursor: pointer;
         transition: all 0.2s;
+        width: 100%;
+        min-width: 0;
     }
 
     :global(.icon-button:hover) {
@@ -226,8 +271,13 @@
         font-size: 0.875rem;
     }
 
-    :global(.material-icons) {
-        font-size: 1.5rem;
+    :global(.icon-button .material-icons) {
+        font-size: 2.25rem !important;
         color: #111827;
+        width: 2.25rem;
+        height: 2.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style> 

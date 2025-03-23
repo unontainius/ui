@@ -105,40 +105,6 @@
 	}
 </script>
 
-{#if isOpen}
-	{#if useDefaults}
-		<Modal bind:isOpen header="Modal Header" onCancel={handleClose} onAccept={onOk}>
-			<div>Modal Content</div>
-		</Modal>
-	{:else}
-		<Modal
-			bind:isOpen
-			header="Modal Header"
-			onCancel={handleClose}
-			onAccept={onOk}
-			size={modalSize}
-			backdrop={useBackdrop}
-			{outerClickToClose}
-			{headerBgColor}
-			{headerTextColor}
-			{footerBgColor}
-			{acceptBtnBgColor}
-			{acceptBtnTextColor}
-			{cancelBtnBgColor}
-			{cancelBtnTextColor}
-			{contentBgColor}
-			{contentTextColor}
-			dockPosition={dockerPosition}
-			{showBorder}
-			{borderColor}
-			{borderWidth}
-			{borderRadius}
-		>
-			<div>Modal Content</div>
-		</Modal>
-	{/if}
-{/if}
-
 <div class="page-container">
 	<div class="cards-container">
 		<div class="card">
@@ -151,7 +117,7 @@
 			</div>
 			<div class="section">
 				<h3>Demo</h3>
-				<button onclick={() => (isOpen = true)}>Open Modal</button>
+				<button onclick={() => (isOpen = true)}>Open Window</button>
 			</div>
 			<div class="section">
 				<h3>Configuration</h3>
@@ -268,10 +234,6 @@
 						<ColorPicker bind:color={contentTextColor} title="Content Text" textSide='left' />
 					</div>
 				</div>
-				<div class="section">
-					<h3>Window</h3>
-					<button onclick={() => (isWindowOpen = true)}>Open Window</button>
-				</div>
 			</div>
 
 			<div class="card">
@@ -322,12 +284,12 @@
 
 	</div>
 </div>
-{#if isWindowOpen}
+{#if isOpen}
 	<Window 
-		show={isWindowOpen} 
+		show={isOpen} 
 		title="Window Title"
-		width="md"
-		position="bottom"
+		width={modalSize}
+		position={dockerPosition}
 		draggable={true}
 		resizeable={true}
 		onDialogueResult={handleClose} 
@@ -335,8 +297,11 @@
 		cancelBtnText="Cancel"
 		showOverlay={false}
 		cancelOnOverlayClick={true}
+		showHeader={true}
 		showFooter={false}
 		showCloseBtn={true}
+		useDuration={false}
+		duration={2000}
 	>
 		<div>Window Content</div>
 	</Window>
@@ -360,35 +325,7 @@
 		max-width: 1200px;
 		justify-content: center;
 	}
-	.editor-container {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		max-width: 1200px;
-		justify-content: center;
-	}
-	.editor-header {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-between;
-	}
-	.editor-body {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		max-width: 1200px;
-		justify-content: center;
-		padding: 0.5rem;
-		height: 40vh;
-	}
-	.editor-body textarea {
-		width: 100%;
-		height: 100%;
-		font-size: 0.9rem;
-		padding: 1rem;
-		border-radius: 0.5rem;
-	}
+
 	.card {
 		background: white;
 		border: 1px solid #ccc;

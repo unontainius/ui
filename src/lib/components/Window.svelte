@@ -6,8 +6,8 @@
 </script>
 
 <script lang="ts">
-	let { show, 
-        title,
+	let { show = $bindable(false), 
+        title = 'Window Header',
         width = 'lg',
         position = 'center',
 		customPosition = {x: 0, y: 0},
@@ -19,24 +19,28 @@
 		styleAcceptBtn = '',
 		styleCancelBtn = '',
         children, 
-        onDialogueResult, 
-        acceptBtnText, 
-        cancelBtnText, 
-        showOverlay,
+        onDialogueResult = () => {}, 
+        acceptBtnText = "Accept", 
+        cancelBtnText = "Cancel", 
+        showOverlay = true,
+		showHeader = true,
 		showFooter = true,
 		showCloseBtn = true,
 		showCancelBtn = true,
 		draggable = true,
 		resizeable = true,
+		useDuration = false,
 		duration = 1000,
-        cancelOnOverlayClick } = $props();
+        cancelOnOverlayClick = true } = $props();
+
+	let isDragging = $state(false);
+	let isDocked = $state(true);
 
 	function handleClose(result: string) {
 		show = false;
 		onDialogueResult?.(result);
 	}
-	if ((!showCloseBtn && !showCancelBtn) || (!showFooter && !showCloseBtn )) {
-		// run a delay then set run handleClose('cancel');
+	if ((!showCloseBtn && !showCancelBtn) || (!showFooter && !showCloseBtn) || useDuration) {
 		setTimeout(() => {
 			handleClose('cancel');
 		}, duration);
@@ -60,45 +64,51 @@
 		console.log('Found elements:', { headerText: !!headerText, resizeHandle: !!resizeHandle });
 
 		if (customPosition.x !== 0 || customPosition.y !== 0) {
+			isDocked = false;
 			left = customPosition.x;
 			top = customPosition.y;
 		} else {
+			isDocked = true;
+			// Get the actual width of the modal
+			const modalWidth = node.offsetWidth;
+			const modalHeight = node.offsetHeight;
+			
 			switch (position) {
 				case 'top-left':
 					left = 0;
 					top = 0;
 					break;
 				case 'top':
-					left = window.innerWidth / 2 - 250;
+					left = (window.innerWidth - modalWidth) / 2;
 					top = 0;
 					break;
 				case 'top-right':
-					left = window.innerWidth - node.offsetWidth;
+					left = window.innerWidth - modalWidth;
 					top = 0;
 					break;
 				case 'left':
 					left = 0;
-					top = window.innerHeight / 2 - node.offsetHeight / 2;
+					top = (window.innerHeight - modalHeight) / 2;
 					break;
 				case 'center':
-					left = window.innerWidth / 2 - node.offsetWidth / 2;
-					top = window.innerHeight / 2 - node.offsetHeight / 2;
+					left = (window.innerWidth - modalWidth) / 2;
+					top = (window.innerHeight - modalHeight) / 2;
 					break;
 				case 'right':
-					left = window.innerWidth - node.offsetWidth;
-					top = window.innerHeight / 2 - node.offsetHeight / 2;
+					left = window.innerWidth - modalWidth;
+					top = (window.innerHeight - modalHeight) / 2;
 					break;
 				case 'bottom-left':
 					left = 0;
-					top = window.innerHeight - node.offsetHeight;
+					top = window.innerHeight - modalHeight;
 					break;
 				case 'bottom':
-					left = window.innerWidth / 2 - node.offsetWidth / 2;
-					top = window.innerHeight - node.offsetHeight;
+					left = (window.innerWidth - modalWidth) / 2;
+					top = window.innerHeight - modalHeight;
 					break;  
 				case 'bottom-right':
-					left = window.innerWidth - node.offsetWidth;
-					top = window.innerHeight - node.offsetHeight;
+					left = window.innerWidth - modalWidth;
+					top = window.innerHeight - modalHeight;
 					break;
 			}
 		}
@@ -112,6 +122,8 @@
 		const mousedownHandler = (e: MouseEvent) => {
 			console.log('Mouse down on header', { clientX: e.clientX, clientY: e.clientY, left, top });
 			moving = true;
+			isDragging = true;
+			isDocked = false;
 			startMouseX = e.clientX - left;
 			startMouseY = e.clientY - top;
 		};
@@ -236,14 +248,9 @@
 		};
 	}
 
-	function showModal() {
-		show = !show;
-	}
-
-
 </script>
 
-
+{#if show}
 	{#if showOverlay}
 		<button
 			onclick={() => {
@@ -255,15 +262,21 @@
 		</button>
 	{/if}
 
-	<div class="my-form" use:dragMe style="width: {
-		width === 'sm' ? 'clamp(250px, 95vw, 500px)' : 
-		width === 'md' ? 'clamp(500px, 95vw, 750px)' : 
-		width === 'lg' ? 'clamp(750px, 95vw, 950px)' : 
-		'95vw'} {styleWindow}">
+	<div 
+		class="my-form" 
+		use:dragMe 
+		class:dragging={isDragging}
+		class:undocked={!isDocked}
+		style="width: {
+			width === 'sm' ? 'clamp(250px, 95vw, 500px)' : 
+			width === 'md' ? 'clamp(500px, 95vw, 750px)' : 
+			width === 'lg' ? 'clamp(750px, 95vw, 950px)' : 
+			'95vw'} {styleWindow}">
 
-		<div class="header" style="{styleHeader}">
-			<div class="header-text" style="{styleHeaderText}">{title}</div>
-			{#if showCloseBtn}
+		{#if showHeader}
+			<div class="header" style="{styleHeader}">
+				<div class="header-text" style="{styleHeaderText}">{title}</div>
+				{#if showCloseBtn}
 				<button onclick={() => {handleClose('cancel');}}
 					class="form-close"
 					aria-label="Close"
@@ -273,8 +286,9 @@
 						<path fill="currentColor" d="M21.4 23L16 17.6L10.6 23L9 21.4l5.4-5.4L9 10.6L10.6 9l5.4 5.4L21.4 9l1.6 1.6l-5.4 5.4l5.4 5.4z"/>
 					</svg>
 				</button>
-			{/if}
-		</div>
+				{/if}
+			</div>
+		{/if}
 		<div class="content-wrapper" style="{styleContent}">
 			<div class="detail">
 				<form action="" class="form">
@@ -302,7 +316,7 @@
             <div class="resize-handle"></div>
         {/if}
 	</div>
-
+{/if}
 
 <style>
 	.overlay {
@@ -338,6 +352,19 @@
 		min-height: 100px;
 		display: flex;
 		flex-direction: column;
+		transition: all 0.2s ease;
+	}
+
+	.my-form.dragging {
+		transition: none;
+		opacity: 0.95;
+		box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+		cursor: grabbing;
+	}
+
+	.my-form.undocked {
+		top: 0;
+		left: 0;
 	}
 
 	.header {
@@ -371,18 +398,17 @@
 		cursor: pointer;
         transform: scale(1);
 	}
-    .button:hover {
-        transform: scale(1);
-    }
+
 	.content-wrapper {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
 		min-height: 0; /* Important for Firefox */
+		max-height: 90dvh;
 	}
 	.detail {
 		flex: 1;
-		padding: 32px;
+		padding: 1rem;
 		overflow-y: auto;
 		min-height: 0; /* Important for Firefox */
 	}

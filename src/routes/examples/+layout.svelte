@@ -1,5 +1,4 @@
 <script lang="ts">
-    import '../app.css';
     import SideBar from "$lib/components/SideBar.svelte";
     import { demoNavItems } from "$lib/samples/demoData/sidebarData";
     import { default_imgURL, default_title, default_subtitle } from "$lib/components/Brand.svelte";
@@ -7,13 +6,9 @@
     let {children} = $props();
 </script>
 
-<svelte:head>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" />
-</svelte:head>
-
-
 <div class="page-container">
+	<SideBar bind:isOpen={sidebarIsOpen} imgURL={default_imgURL} title={default_title} subtitle={default_subtitle} navItems={demoNavItems}/>
+
 	<div class="content">
     	{@render children()}
 	</div>
